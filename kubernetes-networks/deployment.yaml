@@ -4,7 +4,7 @@ metadata:
   name: hw-3-front
   namespace: homework
   labels:
-    app: hw-2-front
+    app: hw-3-front
 spec:
   replicas: 3
   selector:
