@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hw-2-front
+  name: hw-3-front
   namespace: homework
   labels:
     app: hw-2-front
@@ -9,11 +9,11 @@ spec:
   replicas: 3
   selector:
     matchLabels:
-      app: hw-2-front
+      app: hw-3-front
   template:
     metadata:
       labels:
-        app: hw-2-front
+        app: hw-3-front
     spec:
       initContainers:
       - name: busybox
@@ -38,8 +38,9 @@ spec:
             exec:
               command: ["rm", "-rf", "/homework/index.html"]
         readinessProbe:
-          exec:
-            command: ["cat", "/homework/index.html"]
+          httpGet:
+            path: /index.html
+            port: 8000
           initialDelaySeconds: 5
           periodSeconds: 5
       volumes:
