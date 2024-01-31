@@ -52,8 +52,6 @@ spec:
           items:
           - key: nginx.conf
             path: nginx.conf
-      nodeSelector:
-        homework: "true"
   strategy:
     type: RollingUpdate
     rollingUpdate:
