@@ -18,5 +18,8 @@ data:
             root   /homework;
             index  index.html;
         }
+          location /metrics.html {
+            alias   /homework/metrics.html;
+        }
       }
     }
