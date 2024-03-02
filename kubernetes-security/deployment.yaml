@@ -53,7 +53,7 @@ spec:
         lifecycle:
           preStop:
             exec:
-              command: ["rm", "-rf", "/homework/index.html"]
+              command: ["rm", "-rf", "/homework/*"]
         readinessProbe:
           httpGet:
             path: /index.html
@@ -75,7 +75,6 @@ spec:
           items:
           - key: ca.crt
             path: ca.crt
-      - name: init-container-script-volume
       serviceAccountName: monitoring
   strategy:
     type: RollingUpdate
