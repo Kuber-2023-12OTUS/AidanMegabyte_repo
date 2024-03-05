@@ -62,7 +62,8 @@ spec:
           periodSeconds: 5
       volumes:
       - name: shared-volume
-        emptyDir: {}
+        persistentVolumeClaim:        
+          claimName: shared-volume-pvc
       - name: nginx-config-volume
         configMap:
           name: nginx-config
