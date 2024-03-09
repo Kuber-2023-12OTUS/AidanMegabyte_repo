@@ -8,18 +8,34 @@ data:
     user nginx;
     worker_processes  1;
     events {
-      worker_connections  10240;
+      worker_connections  1024;
     }
     http {
       server {
-          listen       8000;
-          server_name  localhost;
+          listen      8000;
+          server_name homework.otus;
+          
           location / {
-            root   /homework;
-            index  index.html;
-        }
-          location /metrics.html {
-            alias   /homework/metrics.html;
-        }
+            root  /homework;
+            index index.html;
+          }
+          
+          location = /metrics {
+            alias /homework/metrics.html;
+          }
+          
+          location /conf/file {
+            alias /homework/conf/file.txt;
+          }
       }
     }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: file
+  namespace: homework
+data:
+  file.txt: |
+    "Ahalay": "Mahalay"
+    "Lyaski": "Masyaski"

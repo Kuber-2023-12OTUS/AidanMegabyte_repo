@@ -50,6 +50,8 @@ spec:
         - name: nginx-config-volume
           mountPath: /etc/nginx
           readOnly: true
+        - name: file-volume
+          mountPath: /homework/conf
         lifecycle:
           preStop:
             exec:
@@ -67,9 +69,9 @@ spec:
       - name: nginx-config-volume
         configMap:
           name: nginx-config
-          items:
-          - key: nginx.conf
-            path: nginx.conf
+      - name: file-volume
+        configMap:
+          name: file
       - name: sa-monitoring-ca-crt-volume
         secret:
           secretName: monitoring
