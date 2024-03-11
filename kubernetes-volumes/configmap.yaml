@@ -5,8 +5,8 @@ metadata:
   namespace: homework
 data:
   nginx.conf: |
-    user nginx;
-    worker_processes  1;
+    user              nginx;
+    worker_processes  auto;
     events {
       worker_connections  1024;
     }
@@ -24,8 +24,8 @@ data:
             alias /homework/metrics.html;
           }
           
-          location /conf/file {
-            alias /homework/conf/file.txt;
+          location = /conf/file {
+            alias /homework/conf/file;
           }
       }
     }
@@ -36,6 +36,6 @@ metadata:
   name: file
   namespace: homework
 data:
-  file.txt: |
+  file: |
     "Ahalay": "Mahalay"
     "Lyaski": "Masyaski"
