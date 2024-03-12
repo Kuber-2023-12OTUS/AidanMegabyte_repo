@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: homework
+data:
+  nginx.conf: |
+    user              nginx;
+    worker_processes  auto;
+    events {
+      worker_connections  1024;
+    }
+    http {
+      server {
+          listen      8000;
+          server_name homework.otus;
+          
+          location / {
+            root  /homework;
+            index index.html;
+          }
+          
+          location = /metrics {
+            alias /homework/metrics.html;
+          }
+          
+          location = /conf/file {
+            alias /homework/conf/file;
+          }
+      }
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: file
+  namespace: homework
+data:
+  file: |
+    "Ahalay": "Mahalay"
+    "Lyaski": "Masyaski"
