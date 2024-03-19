@@ -62,12 +62,14 @@ spec:
           preStop:
             exec:
               command: ["rm", "-rf", "{{ .Values.nginx.basePath }}/*"]
+        {{ if eq .Values.deployment.readinessProbe.enabled true }}
         readinessProbe:
           httpGet:
             path: /{{ .Values.nginx.index }}
             port: {{ .Values.nginx.port }}
-          initialDelaySeconds: 5
-          periodSeconds: 5
+          initialDelaySeconds: {{ .Values.deployment.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.deployment.readinessProbe.periodSeconds }}
+        {{ end }}
       volumes:
       - name: {{ .Values.deployment.volumes.shared.name }}
         persistentVolumeClaim:        

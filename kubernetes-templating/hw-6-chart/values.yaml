@@ -62,6 +62,10 @@ deployment:
       name: file-volume
     saMonitoringCaCrt:
       name: sa-monitoring-ca-crt-volume
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 5
 
 service:
   name: hw-6-front
