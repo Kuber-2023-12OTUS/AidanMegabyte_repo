@@ -1,0 +1,71 @@
+namespace:
+  name: homework
+
+labels:
+  app: hw-6-front
+
+host:
+  name: homework.otus
+
+nginx:
+  configMap:
+    name: nginx-config
+  port: 8000
+  basePath: /homework
+  index: index.html
+
+simpleFile:
+  configMap:
+    name: file
+  file:
+    name: file
+    path: /conf
+
+metrics:
+  serviceAccount:
+    name: monitoring
+  secret:
+    name: monitoring
+    caCertDirectory: /usr/local/share/ca-certificates
+  clusterRole:
+    name: monitoring
+  clusterRoleBinding:
+    name: monitoring
+  file:
+    name: metrics.html
+
+storage:
+  class:
+    name: custom-storage-class
+  persistentVolumeClaim:
+    name: shared-volume-pvc
+
+deployment:
+  name: hw-6-front
+  replicaCount: 3
+  rollingUpdate:
+    maxUnavailable: 1
+    maxSurge: 0
+  initContainer:
+    name: curl
+    image: curlimages/curl:8.6.0
+  container:
+    name: nginx
+    image: nginx:1.25.3
+  volumes:
+    shared:
+      name: shared-volume
+      initPath: /init
+    nginxConfig:
+      name: nginx-config-volume
+    file:
+      name: file-volume
+    saMonitoringCaCrt:
+      name: sa-monitoring-ca-crt-volume
+
+service:
+  name: hw-6-front
+  port: 8000
+
+ingress:
+  name: hw-6-front

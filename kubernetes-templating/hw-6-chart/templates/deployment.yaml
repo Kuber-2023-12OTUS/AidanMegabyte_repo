@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployment.name }}
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- with .Values.labels }}
+    {{ toYaml . | indent 4 }}
+    {{- end }}
+spec:
+  replicas: {{ .Values.deployment.replicaCount }}
+  selector:
+    matchLabels:
+      {{- with .Values.labels }}
+      {{ toYaml . | indent 6 }}
+      {{- end }}
+  template:
+    metadata:
+      labels:
+        {{- with .Values.labels }}
+        {{ toYaml . | indent 8 }}
+        {{- end }}
+    spec:
+      initContainers:
+      - name: {{ .Values.deployment.initContainer.name }}
+        image: {{ .Values.deployment.initContainer.image }}
+        env:
+        - name: SA_MONITORING_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.metrics.secret.name }}
+              key: token
+        - name: SA_MONITORING_CACERT_PATH
+          value: "{{ .Values.metrics.secret.caCertDirectory }}/sa-{{ .Values.metrics.serviceAccount.name }}/ca.crt"
+        - name: KUBERNETES_SERVICE_URL
+          value: "https://$(KUBERNETES_SERVICE_HOST):$(KUBERNETES_SERVICE_PORT)"
+        volumeMounts:
+        - name: {{ .Values.deployment.volumes.shared.name }}
+          mountPath: {{ .Values.deployment.volumes.shared.initPath }}
+        - name: {{ .Values.deployment.volumes.saMonitoringCaCrt.name }}
+          mountPath: {{ .Values.metrics.secret.caCertDirectory }}/sa-{{ .Values.metrics.serviceAccount.name }}
+          readOnly: true
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          echo '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><h1>Ахалай махалай</h1><p>Ляськи масяськи</p></body></html>' > {{ .Values.deployment.volumes.shared.initPath }}/{{ .Values.nginx.index }}
+          curl $KUBERNETES_SERVICE_URL/metrics --cacert $SA_MONITORING_CACERT_PATH --header "Authorization: Bearer $SA_MONITORING_TOKEN" > {{ .Values.deployment.volumes.shared.initPath }}/{{ .Values.metrics.file.name }}
+      containers:
+      - name: {{ .Values.deployment.container.name }}
+        image: {{ .Values.deployment.container.image }}
+        ports:
+        - containerPort: {{ .Values.nginx.port }}
+        volumeMounts:
+        - name: {{ .Values.deployment.volumes.shared.name }}
+          mountPath: {{ .Values.nginx.basePath }}
+        - name: {{ .Values.deployment.volumes.nginxConfig.name }}
+          mountPath: /etc/nginx
+          readOnly: true
+        - name: {{ .Values.deployment.volumes.file.name }}
+          mountPath: {{ .Values.nginx.basePath }}{{ .Values.simpleFile.file.path }}
+        lifecycle:
+          preStop:
+            exec:
+              command: ["rm", "-rf", "{{ .Values.nginx.basePath }}/*"]
+        readinessProbe:
+          httpGet:
+            path: /{{ .Values.nginx.index }}
+            port: {{ .Values.nginx.port }}
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: {{ .Values.deployment.volumes.shared.name }}
+        persistentVolumeClaim:        
+          claimName: {{ .Values.storage.persistentVolumeClaim.name }}
+      - name: {{ .Values.deployment.volumes.nginxConfig.name }}
+        configMap:
+          name: {{ .Values.nginx.configMap.name }}
+      - name: {{ .Values.deployment.volumes.file.name }}
+        configMap:
+          name: {{ .Values.simpleFile.configMap.name }}
+      - name: {{ .Values.deployment.volumes.saMonitoringCaCrt.name }}
+        secret:
+          secretName: {{ .Values.metrics.secret.name }}
+          items:
+          - key: ca.crt
+            path: ca.crt
+      serviceAccountName: {{ .Values.metrics.serviceAccount.name }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: {{ .Values.deployment.rollingUpdate.maxUnavailable }}
+      maxSurge: {{ .Values.deployment.rollingUpdate.maxSurge }}

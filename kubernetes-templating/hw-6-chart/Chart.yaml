@@ -1,0 +1,4 @@
+apiVersion: v2
+name: hw-6-chart
+description: HW №6
+version: 1.0.0
