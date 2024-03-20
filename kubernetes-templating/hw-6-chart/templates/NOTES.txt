@@ -1,0 +1,7 @@
+Главная страница:
+- http://{{ .Values.host.name }}
+- http://{{ .Values.host.name }}/
+- http://{{ .Values.host.name }}/homepage
+- http://{{ .Values.host.name }}/homepage/
+Метрики из ДЗ №5 - http://{{ .Values.host.name }}/metrics.html
+Файл с переменными из ДЗ №4 - http://{{ .Values.host.name }}/conf/file
