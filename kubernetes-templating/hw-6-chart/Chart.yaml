@@ -2,3 +2,7 @@ apiVersion: v2
 name: hw-6-chart
 description: HW №6
 version: 1.0.0
+dependencies:
+  - name: mongodb
+    version: "15.0.2"
+    repository: "https://charts.bitnami.com/bitnami"
