@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hw-7
+  labels:
+    app: hw-7
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hw-7
+  template:
+    metadata:
+      labels:
+        app: hw-7
+    spec:
+      containers:
+      - name: mysql
+        image: roflmaoinmysoul/mysql-operator:1.0.0
+      serviceAccountName: api-server-admin
